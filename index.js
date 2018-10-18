@@ -1,15 +1,20 @@
 const EventEmitter = require('events');
 const path = require('path');
-
-// Try use handler if runtime and ABI is compatible
-try {
-  const SegfaultHandler = require('segfault-handler');
-  SegfaultHandler.registerHandler("iohook-crash.log");
-} catch (e) {}
+const fs = require('fs');
 
 const runtime = process.versions['electron'] ? 'electron' : 'node';
-const essential = runtime + '-v' + process.versions.modules + '-' + process.platform + '-' + process.arch;
-const modulePath = path.join(__dirname, 'builds', essential, 'build', 'Release', 'iohook.node');
+const essential = `${runtime}-v${process.versions.modules}-${process.platform}-${process.arch}`;
+let modulePath = path.join(
+  __dirname,
+  'builds',
+  essential,
+  'build',
+  'Release',
+  'iohook.node'
+);
+if (!fs.existsSync(modulePath)) {
+  modulePath = path.join(__dirname, 'build', 'Release', 'iohook.node');
+}
 if (process.env.DEBUG) {
   console.info('Loading native binary:', modulePath);
 }
@@ -73,7 +78,7 @@ class IOHook extends EventEmitter {
     let shortcutId = Date.now() + Math.random();
     keys.forEach(keyCode => {
       shortcut[keyCode] = false;
-    })
+    });
     shortcut.id = shortcutId;
     shortcut.callback = callback;
     this.shortcuts.push(shortcut);
@@ -85,7 +90,7 @@ class IOHook extends EventEmitter {
    * @param shortcutId
    */
   unregisterShortcut(shortcutId) {
-    this.shortcuts.forEach((shortcut,i) => {
+    this.shortcuts.forEach((shortcut, i) => {
       if (shortcut.id === shortcutId) {
         this.shortcuts.splice(i, 1);
       }
@@ -159,7 +164,10 @@ class IOHook extends EventEmitter {
       this.emit(events[msg.type], event);
 
       // If there is any registered shortcuts then handle them.
-      if ((event.type === 'keydown' || event.type === 'keyup') && iohook.shortcuts.length > 0) {
+      if (
+        (event.type === 'keydown' || event.type === 'keyup') &&
+        iohook.shortcuts.length > 0
+      ) {
         this._handleShortcut(event);
       }
     }
@@ -277,7 +285,8 @@ class IOHook extends EventEmitter {
       });
     } else if (event.type === 'keyup') {
       this.shortcuts.forEach(shortcut => {
-        if (shortcut[event.keycode] !== undefined) shortcut[event.keycode] = false;
+        if (shortcut[event.keycode] !== undefined)
+          shortcut[event.keycode] = false;
       });
     }
   }
