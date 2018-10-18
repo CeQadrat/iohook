@@ -40,14 +40,14 @@ static pthread_cond_t hook_control_cond;
 #endif
 
 bool logger_proc(unsigned int level, const char *format, ...) {
-  if (!sIsDebug) {
-    return false;
-  }
   bool status = false;
   va_list args;
   switch (level) {
     case LOG_LEVEL_DEBUG:
     case LOG_LEVEL_INFO:
+      if (!sIsDebug) {
+        return false;
+      }
       va_start(args, format);
       status = vfprintf(stdout, format, args) >= 0;
       va_end(args);

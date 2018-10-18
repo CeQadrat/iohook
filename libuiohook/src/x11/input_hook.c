@@ -1154,8 +1154,9 @@ UIOHOOK_API int hook_stop() {
 					pthread_cond_signal(&hook_xrecord_cond);
 					pthread_mutex_unlock(&hook_xrecord_mutex);
 					#endif
-
-					XCloseDisplay(disp);
+          if (disp != NULL) {
+            XCloseDisplay(disp);
+          }
 
 					// See Bug 42356 for more information.
 					// https://bugs.freedesktop.org/show_bug.cgi?id=42356#c4

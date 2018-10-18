@@ -8,9 +8,9 @@ describe('Keyboard events', () => {
     ioHook.stop();
   });
 
-  // afterAll(() => {
-  //   ioHook.unload();
-  // });
+  afterAll(() => {
+    ioHook.unload();
+  });
 
   it('receives the text "hello world" on keyup event', done => {
     expect.assertions(22);
