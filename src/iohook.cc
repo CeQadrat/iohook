@@ -374,20 +374,24 @@ void run() {
 void stop() {
   int status = hook_stop();
   switch (status) {
+    case UIOHOOK_SUCCESS:
+      logger_proc(LOG_LEVEL_INFO, "Hook stopped successful. (%#X)\n", status);
+      break;
+
     // System level errors.
     case UIOHOOK_ERROR_OUT_OF_MEMORY:
-      logger_proc(LOG_LEVEL_ERROR, "Failed to allocate memory. (%#X)", status);
+      logger_proc(LOG_LEVEL_ERROR, "Failed to allocate memory. (%#X)\n", status);
       break;
 
     case UIOHOOK_ERROR_X_RECORD_GET_CONTEXT:
       // NOTE This is the only platform specific error that occurs on hook_stop().
-      logger_proc(LOG_LEVEL_ERROR, "Failed to get XRecord context. (%#X)", status);
+      logger_proc(LOG_LEVEL_ERROR, "Failed to get XRecord context. (%#X)\n", status);
       break;
 
     // Default error.
     case UIOHOOK_FAILURE:
     default:
-      logger_proc(LOG_LEVEL_ERROR, "An unknown hook error occurred. (%#X)", status);
+      logger_proc(LOG_LEVEL_ERROR, "An unknown hook error occurred. (%#X)\n", status);
       break;
   }
 
